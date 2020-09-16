@@ -1,101 +1,134 @@
-#author by Hunter Cornay
-#imports
+#author Hunter Corny
+#
 
 from urllib.request import urlretrieve
 import os
 import re
 import collections 
 
-#redirect and error counter
-loopCount = 0
-redirects = 0
-errors = 0
-#the file url
+
+#define varibles 
+i=0
+redirectCounter = 0
+errorCounter = 0
 URL = 'https://s3.amazonaws.com/tcmg476/http_access_log'
-#location where the file will be saved
-LOCAL_FILE = 'local_copy.log'
+LOCAL_FILE = 'http_access_log'
 
-#File Checker
-if not os.path.isfile(LOCAL_FILE):urlretrieve(URL, LOCAL_FILE)
 
-#Regex Pattern
+def file_len(LOCAL_FILE):
+    with open (LOCAL_FILE) as f:
+        for i, l in enumerate (f):
+            pass
+    return i + 1
+
+#find all the files
+def fileCount():
+	filelog = []
+	leastcommon = []
+	with open(LOCAL_FILE) as logs:
+		for line in logs:
+			try:
+				filelog.append(line[line.index("GET")+4:line.index("HTTP")])		
+			except:
+				pass
+	counter = collections.Counter(filelog)
+	for count in counter.most_common(1):														
+		print("Most common file: {} with {} requests.".format(str(count[0]), str(count[1])))
+	for count in counter.most_common():					
+		if str(count[1]) == '1':
+			leastcommon.append(count[0])
+	if leastcommon:																						
+		response = input("Display files requested only once? Y/N)".format(len(leastcommon)))
+		if response == 'y' or response == 'Y':
+			for file in leastcommon:
+				print(file)
+
+#retrieve files
+if not os.path.isfile(LOCAL_FILE):
+    urlretrieve(URL, LOCAL_FILE)
+
+#define months
+months_count ={
+  "Jan": 0,
+  "Feb": 0,
+  "Mar": 0,
+  "Apr": 0,
+  "May": 0,
+  "Jun": 0,
+  "Jul": 0,
+  "Aug": 0,
+  "Sep": 0,
+  "Oct": 0,
+  "Nov": 0,
+  "Dec": 0
+}
+
+#defien log files
+janlogs=open("january.txt", "a+"); feblogs=open("february.txt", "a+"); marlogs=open("march.txt", "a+"); 
+aprlogs=open("april.txt", "a+"); maylogs=open("may.txt", "a+"); junlogs=open("june.txt", "a+");
+jullogs=open("july.txt", "a+"); auglogs=open("august.txt", "a+"); seplogs=open("september.txt", "a+")
+octlogs=open("octlogs.txt", "a+"); novlogs=open("november.txt", "a+"); declogs=open("december.txt", "a+")   
+
+
+# Adam's regix pattern 
 pattern = r'(.*?) - (.*) \[(.*?)\] \"(.*?) (.*?)\"? (.+?) (.+) (.+)'
 
-#Line Reader
-lineRead = open(LOCAL_FILE, 'r').readlines()
+lines = open(LOCAL_FILE, 'r').readlines()
 
-#Match Finder.
-for line in lineRead:
-    matchFinder = re.match(pattern, line)
-    if not matchFinder:
+
+for line in lines:
+    match = re.match(pattern, line)
+
+    if not match:
         continue
-        
-months_count = {"Jan": 0, "Feb": 0, "Mar": 0, "Apr": 0, "May": 0, "Jun": 0, "Jul": 0, "Aug": 0, "Sep": 0, "Oct": 0, "Nov": 0, "Dec": 0}
 
-jan_logs = open("janLog.txt", "a+"); feb_logs = open("febLog.txt", "a+"); mar_logs = open("marLog.txt", "a+");
-apr_logs = open("aprLog.txt", "a+"); may_logs = open("mayLog.txt", "a+"); jun_logs = open("junLog.txt", "a+");
-jul_logs = open("julLog.txt", "a+"); aug_logs = open("augLog.txt", "a+"); sep_logs = open("sepLog.txt", "a+");
-oct_logs = open("octLog.txt", "a+"); nov_logs = open("novLog.txt", "a+"); dec_logs = open("decLog.txt", "a+");
-
-#the File Length Counter and finding Get Requests and HTTP
-def file_len(LOCAL_FILE):
-    with open(LOCAL_FILE) as f:
-        for loopCount, l in enumerate(f):
-            pass
-    return loopCount + 1
-
-def fileCounter():
-    filelog = []
-    with open(LOCAL_FILE) as logs:
-        for line in logs:
-            try:
-                filelog.append(line[line.index("GET") + 4:line.index("HTTP")])
-            except:
-                pass
-    counter = collections.Counter(filelog)
-    least_common = collections.Counter(filelog).most_common()[-1]
-#Most Common Requested File Finder
-    for count in counter.most_common(1):
-        print("MOST COMMON REQUESTED FILE: {} WITH {} REQUESTS.".format(str(count[0]), str(count[1])))
-#Least Requested File Finder
-    for count in counter.most_common(-1):
-        print("LEAST COMMONLY REQUESTED FILE: {} WITH {} REQUEST.".format(str(count[0]), str(count[1])))
-        
- #Timestamp Parser for Log Subdivision
+    match.group(0) 
+    match.group(3) 
     timestamp = match.group(3)
     month = timestamp[3:6]
     months_count[month] += 1
-    match.group(7)
- #ReDirect Counter, Error Counter, and Log Subdivider
+    match.group(7) 
+    
     if (match.group(7)[0] == "3"):
-        redirects += 1
+        redirectCounter += 1
     elif (match.group(7)[0] == "4"):
-        errors += 1
-    if (month == "Jan"):jan_logs.write(line)
-    elif (month == "Feb"):feb_logs.write(line)
-    elif (month == "Mar"):mar_logs.write(line)
-    elif (month == "Apr"):apr_logs.write(line)
-    elif (month == "May"):may_logs.write(line)
-    elif (month == "Jun"):jun_logs.write(line)
-    elif (month == "Jul"):jul_logs.write(line)
-    elif (month == "Aug"):aug_logs.write(line)
-    elif (month == "Sep"):sep_logs.write(line)
-    elif (month == "Oct"):oct_logs.write(line)
-    elif (month == "Nov"):nov_logs.write(line)
-    elif (month == "Dec"):dec_logs.write(line)
+        errorCounter += 1
+    if (month == "Jan"): 
+        janlogs.write(line)
+    elif (month == "Feb"): 
+        feblogs.write(line)
+    elif (month == "Mar"): 
+        marlogs.write(line)
+    elif (month == "Apr"): 
+        aprlogs.write(line)
+    elif (month == "May"): 
+        maylogs.write(line)
+    elif (month == "Jun"): 
+        junlogs.write(line)
+    elif (month == "Jul"): 
+        jullogs.write(line)
+    elif (month == "Aug"): 
+        auglogs.write(line)
+    elif (month == "Sep"): 
+        seplogs.write(line)
+    elif (month == "Oct"): 
+        octlogs.write(line)
+    elif (month == "Nov"): 
+        novlogs.write(line)
+    elif (month == "Dec"): 
+        declogs.write(line)
+    
     else:
         continue
-        
-#Output
-totalEntries = file_len(LOCAL_FILE)
-print("Executing...")
-print("TOTAL LOG LENGTH IN LAST YEAR: " totalEntries)
-print("Daily Average: " round(totalEntries / 365, 2))
-print("Weekly Average: " round(totalEntries / 52, 2))
-print("Monthly Average:" round(totalEntries / 12, 2))
-print("Monthly Breakdown:" months_count)
-print("Redirects:" redirects)
-print("Redirect Percentage (3-Series Code): {0:.2%}".format(redirects / totalEntries))
-print("Errors:" errors)
-print("Client Error (4-Series Code) requests: {0:.2%}".format(errors / totalEntries))
-fileCounter()
+print("Request Made")
+print(file_len(LOCAL_FILE))
+totalResponses = file_len(LOCAL_FILE)
+print("Average number for month:", round(totalResponses/12,2))
+print("Average number for week: ",round(totalResponses/52,2))
+print("Average number for day: ", round(totalResponses/365,2))
+print("Month Count:", months_count)
+print("Total number of redirects:",redirectCounter)
+print("Percentage of all requests that were redirects (3xx): {0:.2%}".format(redirectCounter/totalResponses))
+print("Error count:",errorCounter)
+print("Percentage of client error (4xx) requests: {0:.2%}".format(errorCounter/totalResponses))	
+fileCount()
