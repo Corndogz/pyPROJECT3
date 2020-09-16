@@ -42,3 +42,67 @@ sep_logs = open("sepLog.txt", "a+");
 oct_logs = open("octLog.txt", "a+");
 nov_logs = open("novLog.txt", "a+");
 dec_logs = open("decLog.txt", "a+");
+
+#Setting up File Length Counter
+def file_len(LOCAL_FILE):
+    with open(LOCAL_FILE) as f:
+        for loopCount, l in enumerate(f):
+            pass
+    return loopCount + 1
+
+#Finding Get Requests and HTTP
+def fileCounter():
+    filelog = []
+    with open(LOCAL_FILE) as logs:
+        for line in logs:
+            try:
+                filelog.append(line[line.index("GET") + 4:line.index("HTTP")])
+            except:
+                pass
+    counter = collections.Counter(filelog)
+    least_common = collections.Counter(filelog).most_common()[-1]
+#Most Commonly Requested File Finder
+    for count in counter.most_common(1):
+        print("Most commonly requested file: {} with {} requests.".format(str(count[0]), str(count[1])))
+#Least Commonly Requested File Finder
+    for count in counter.most_common(-1):
+        print("Least commonly requested file: {} with {} requests.".format(str(count[0]), str(count[1])))
+        
+ #Timestamp Parser for Log Subdivision
+    timestamp = match.group(3)
+    month = timestamp[3:6]
+    months_count[month] += 1
+    match.group(7)
+ #ReDirect Counter, Error Counter, and Log Subdivider
+    if (match.group(7)[0] == "3"):
+        redirects += 1
+    elif (match.group(7)[0] == "4"):
+        errors += 1
+    if (month == "Jan"):jan_logs.write(line)
+    elif (month == "Feb"):feb_logs.write(line)
+    elif (month == "Mar"):mar_logs.write(line)
+    elif (month == "Apr"):apr_logs.write(line)
+    elif (month == "May"):may_logs.write(line)
+    elif (month == "Jun"):jun_logs.write(line)
+    elif (month == "Jul"):jul_logs.write(line)
+    elif (month == "Aug"):aug_logs.write(line)
+    elif (month == "Sep"):sep_logs.write(line)
+    elif (month == "Oct"):oct_logs.write(line)
+    elif (month == "Nov"):nov_logs.write(line)
+    elif (month == "Dec"):dec_logs.write(line)
+    else:
+        continue
+        
+#Output
+totalEntries = file_len(LOCAL_FILE)
+print("Executing...")
+print("Total Log Length" totalEntries)
+print("Daily Average: " round(totalEntries / 365, 2))
+print("Weekly Average: " round(totalEntries / 52, 2))
+print("Monthly Average:" round(totalEntries / 12, 2))
+print("Monthly Breakdown:" months_count)
+print("Redirects:" redirects)
+print("Redirect Percentage (3-Series Code): {0:.2%}".format(redirects / totalEntries))
+print("Errors:" errors)
+print("Client Error (4-Series Code) requests: {0:.2%}".format(errors / totalEntries))
+fileCounter()
