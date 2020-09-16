@@ -1,16 +1,18 @@
 #author by Hunter Cornay
-
+#imports
 
 from urllib.request import urlretrieve
 import os
 import re
 import collections 
 
-#File Setup and Variable Reset
+#redirect and error counter
 loopCount = 0
 redirects = 0
 errors = 0
+#the file url
 URL = 'https://s3.amazonaws.com/tcmg476/http_access_log'
+#location where the file will be saved
 LOCAL_FILE = 'local_copy.log'
 
 #File Checker
@@ -28,29 +30,20 @@ for line in lineRead:
     if not matchFinder:
         continue
         
-#Month Breakdown
 months_count = {"Jan": 0, "Feb": 0, "Mar": 0, "Apr": 0, "May": 0, "Jun": 0, "Jul": 0, "Aug": 0, "Sep": 0, "Oct": 0, "Nov": 0, "Dec": 0}
-jan_logs = open("janLog.txt", "a+");
-feb_logs = open("febLog.txt", "a+");
-mar_logs = open("marLog.txt", "a+");
-apr_logs = open("aprLog.txt", "a+");
-may_logs = open("mayLog.txt", "a+");
-jun_logs = open("junLog.txt", "a+");
-jul_logs = open("julLog.txt", "a+");
-aug_logs = open("augLog.txt", "a+");
-sep_logs = open("sepLog.txt", "a+");
-oct_logs = open("octLog.txt", "a+");
-nov_logs = open("novLog.txt", "a+");
-dec_logs = open("decLog.txt", "a+");
 
-#Setting up File Length Counter
+jan_logs = open("janLog.txt", "a+"); feb_logs = open("febLog.txt", "a+"); mar_logs = open("marLog.txt", "a+");
+apr_logs = open("aprLog.txt", "a+"); may_logs = open("mayLog.txt", "a+"); jun_logs = open("junLog.txt", "a+");
+jul_logs = open("julLog.txt", "a+"); aug_logs = open("augLog.txt", "a+"); sep_logs = open("sepLog.txt", "a+");
+oct_logs = open("octLog.txt", "a+"); nov_logs = open("novLog.txt", "a+"); dec_logs = open("decLog.txt", "a+");
+
+#the File Length Counter and finding Get Requests and HTTP
 def file_len(LOCAL_FILE):
     with open(LOCAL_FILE) as f:
         for loopCount, l in enumerate(f):
             pass
     return loopCount + 1
 
-#Finding Get Requests and HTTP
 def fileCounter():
     filelog = []
     with open(LOCAL_FILE) as logs:
@@ -61,12 +54,12 @@ def fileCounter():
                 pass
     counter = collections.Counter(filelog)
     least_common = collections.Counter(filelog).most_common()[-1]
-#Most Commonly Requested File Finder
+#Most Common Requested File Finder
     for count in counter.most_common(1):
-        print("Most commonly requested file: {} with {} requests.".format(str(count[0]), str(count[1])))
-#Least Commonly Requested File Finder
+        print("MOST COMMON REQUESTED FILE: {} WITH {} REQUESTS.".format(str(count[0]), str(count[1])))
+#Least Requested File Finder
     for count in counter.most_common(-1):
-        print("Least commonly requested file: {} with {} requests.".format(str(count[0]), str(count[1])))
+        print("LEAST COMMONLY REQUESTED FILE: {} WITH {} REQUEST.".format(str(count[0]), str(count[1])))
         
  #Timestamp Parser for Log Subdivision
     timestamp = match.group(3)
@@ -96,7 +89,7 @@ def fileCounter():
 #Output
 totalEntries = file_len(LOCAL_FILE)
 print("Executing...")
-print("Total Log Length" totalEntries)
+print("TOTAL LOG LENGTH IN LAST YEAR: " totalEntries)
 print("Daily Average: " round(totalEntries / 365, 2))
 print("Weekly Average: " round(totalEntries / 52, 2))
 print("Monthly Average:" round(totalEntries / 12, 2))
