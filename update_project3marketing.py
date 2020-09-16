@@ -1,4 +1,4 @@
-#author Hunter Corny
+#author Hunter Cornay
 #
 
 from urllib.request import urlretrieve
